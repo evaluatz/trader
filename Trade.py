@@ -15,12 +15,12 @@ headers = {
 }
 class Trade:
     def __init__(self, logging, priceBuy, priceSell, schemaId, base_url):
-        self.priceBuy = float(priceBuy)
-        self.priceSell = float(priceSell)
+        self.priceBuy = round(float(priceBuy))
+        self.priceSell = round(float(priceSell))
 
         if self.priceSell < self.priceBuy  * 1.001: 
-            self.priceSell = round(float(priceBuy) * 1.001,2)
-            self.priceBuy = round(float(priceBuy) * 0.998,2)
+            self.priceSell = round(float(priceBuy) * 1.001)
+            self.priceBuy = round(float(priceBuy) * 0.998)
 
         self.schemaId = int(schemaId)
         self.logging = logging

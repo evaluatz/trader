@@ -25,7 +25,8 @@ def mkdir_p(path):
 current_dir = os.path.dirname(os.path.abspath(__file__))
 print(current_dir)
 
-base_url = 'https://api.evaluatz.com'
+#base_url = 'https://api.evaluatz.com'
+base_url = 'http://localhost:3000'
 
 current_time = datetime.utcnow()
 last_update = current_time - timedelta(minutes=current_time.minute % 15) - timedelta(seconds=current_time.second)
@@ -34,10 +35,10 @@ oparser = OptionParser()
 oparser.add_option("-s", "--order-schema", dest="order_schema_id", help="ORDER SCHEMA", metavar="ORDER-SCHEMA")
 (options, args) = oparser.parse_args()
 
-foldername = '{current_dir}\logs\{dt_lst_update}\{lst_update}'.format(current_dir=current_dir, dt_lst_update=last_update.strftime("%Y%m%d") , lst_update=last_update.strftime("%Y%m%d_%H_%M_%S"))
+foldername = '{current_dir}/logs/{dt_lst_update}/{lst_update}'.format(current_dir=current_dir, dt_lst_update=last_update.strftime("%Y%m%d") , lst_update=last_update.strftime("%Y%m%d_%H_%M_%S"))
 mkdir_p(foldername)
 filename = 'log_execute_order_{schema_id}'.format(foldername=foldername,schema_id=str(options.order_schema_id)) 
-log_path = '{foldername}\{filename}.log'.format(foldername=foldername,filename=filename) 
+log_path = '{foldername}/{filename}.log'.format(foldername=foldername,filename=filename) 
 print("log location", log_path)
 logging.basicConfig(filename=log_path,
                             filemode='a',
