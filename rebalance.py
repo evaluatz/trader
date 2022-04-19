@@ -63,20 +63,38 @@ logging.info('Request:' + url_order_schema_details)
 order_schema_details_res = requests.get(url_order_schema_details)
 order_schema_details = order_schema_details_res.json()
 
-newOrders = []
+order_list = []
+order_original_list = []
+
+
+def checkForChildOrders(order_id):
+    order_list_x = []
+    url_order_x = '{url_order}{order_id}'.format(url_order=url_order, order_id=order_id)
+    order_temp = requests.get(url_order_x, headers=headers).json()
+    order_temp_orders = order_temp['orders']
+    if len(order_temp_orders) > 0:
+        for o in order_temp_orders:
+            order_list_x.extend(checkForChildOrders(o['id']))
+    else: 
+        order_list_x.append(order_temp)
+    return order_list_x
+
+
 for order in order_schema_details['orders']:
     if order['status']['id'] == 0 and not order['isBuy']:
-        newOrders.append(order)
+        order_list_x = checkForChildOrders(order['id'])
+        order_original_list.append(order['id'])
+        order_list.extend(order_list_x)
 
-if len(newOrders) > 1:
-    dfNewOrders = pd.DataFrame(newOrders)
+if len(order_list) > 1:
+    dfNewOrders = pd.DataFrame(order_list)
     meanValue = round(dfNewOrders['value'].astype(float).mean())
     qntToSell = float(order_schema_details['quantity']) * dfNewOrders['id'].count()    
     data = json.dumps({ 
                 "isBuy": False,
                 "value": meanValue,
                 "schemaId": schemaId,
-                "orders": dfNewOrders['id'].to_list()
+                "orders": order_original_list
             })
     order = requests.post(url_order, data=data, headers=headers).json()
 
